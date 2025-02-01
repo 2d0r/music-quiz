@@ -1,9 +1,11 @@
 :root {
     --bg-color: #0E0E0E;
-    --accent-color: #4AC45A;
-    --neutral-color: grey;
     --disabled-color: #202020;
-    --incorrect-color: darkred;
+    --green-color-dim: #133218;
+    --green-color: #4AC45A;
+    --neutral-color: grey;
+    --red-color-dim: rgb(35, 0, 0);
+    --red-color: darkred;
 }
 
 @font-face {
@@ -13,7 +15,7 @@
 
 body {
     background-color: var(--bg-color);
-    color: var(--accent-color);
+    color: var(--green-color);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -38,20 +40,35 @@ header h1, footer h1 {
 header img, footer img {
     height: 60px;
 }
+.title.red {
+    color: var(--red-color);
+}
 
 main {
     width: 50vw;
     max-width: 500px;
     min-height: 35vh;
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--green-color);
     border-radius: 24px;
     padding: 48px;
-    box-shadow: 0px 0px 30px var(--accent-color);
+    box-shadow: 0px 0px 30px var(--green-color);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 24px;
+}
+
+main.red {
+    border: 1px solid var(--red-color);
+    box-shadow: 0px 0px 30px var(--red-color);
+}
+
+button {
+    min-height: 40px;
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
 }
 
 #heading {
@@ -60,6 +77,9 @@ main {
     margin: 0;
     font-weight: 100;
 }
+
+
+/* Answers section */
 
 #answers-section {
     display: grid;
@@ -76,15 +96,6 @@ main {
     gap: 12px; */
 }
 
-/* Buttons */
-
-button {
-    min-height: 40px;
-    border-radius: 12px;
-    padding: 12px;
-    cursor: pointer;
-}
-
 #answers-section button {
     width: 100%;
     height: 100%;
@@ -94,20 +105,46 @@ button {
     font-family: inherit;
 }
 
+#answers-section button.disabled {
+    cursor: auto;
+}
+
+#answers-section button:hover {
+    background-color: var(--disabled-color);
+}
+
+#answers-section button.disabled:hover {
+    background-color: var(--bg-color);
+}
+
 #answers-section button.correct {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
+    border-color: var(--green-color);
+    color: var(--green-color);
 }
 
 #answers-section button.incorrect {
-    border-color: var(--incorrect-color);
-    color: var(--incorrect-color);
+    border-color: var(--red-color);
+    color: var(--red-color);
 }
+
+#answers-section button.correct.selected {
+    background-color: var(--green-color-dim);
+}
+
+#answers-section button.incorrect.selected {
+    background-color: var(--red-color-dim);
+}
+
+
+/* Tutorial section */
 
 #tutorial-section {
     color: white;
     line-height: 150%;
 }
+
+
+/* Results section */
 
 #results-section {
     display: flex;
@@ -119,8 +156,11 @@ button {
     font-size: 3em;
 }
 
+
+/* Submit button */
+
 #submit-button {
-    background-color: var(--accent-color);
+    background-color: var(--green-color);
     color: var(--bg-color);
     font-family: inherit;
     font-size: 1.1em;
@@ -131,6 +171,7 @@ button {
 #submit-button.disabled {
     background-color: var(--disabled-color);
 }
+
 
 /* Special styles */
 
@@ -144,6 +185,7 @@ button {
 .hidden {
     display: none!important;
 }
+
 
 /* Media queries */
 

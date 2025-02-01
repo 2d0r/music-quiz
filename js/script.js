@@ -25,23 +25,27 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             nextQuestion();
         }
+        // Reset red UI ever time submit button is clicked
+        clearRedUi();
     });
 
-    // Handle click on the answer options
+    // Handle selecting an answer
     for (let i = 1; i <= 4; i++) {
         const selectedAnswer = document.getElementById(`answer-${i}`);
         selectedAnswer.addEventListener('click', () => {
             // Check that button is not disabled (which is the case when an answer was already selected)
             if (!selectedAnswer.classList.contains('disabled')) {
                 if (i === correctAnswerNum) {
-                    selectedAnswer.classList.add('correct');
+                    selectedAnswer.classList.add('correct', 'selected');
                     score += 1;
                 } else {
-                    selectedAnswer.classList.add('incorrect');
+                    selectedAnswer.classList.add('incorrect', 'selected');
                     document.getElementById(`answer-${correctAnswerNum}`).classList.add('correct');
+                    // Make more elements of the UI red to signal the wrong answer
+                    makeUiRed();
                 }
-                // Deactivate all other answer buttons
-                deactivateOtherAnswers(i);
+                // Deactivate all other answer buttons, so a second answer can't be selected
+                deactivateAllAnswerButtons();
                 // Activate submitButton to navigate to the next question
                 submitButton.classList.remove('disabled');
             }
@@ -59,6 +63,7 @@ const fetchQuestionsFromTriviaAPI = async () => {
     }
 }
 
+// Function to start quiz, from the tutorial page
 const startQuiz = async () => {
     // Fetch questions from Trivia API
     data = await fetchQuestionsFromTriviaAPI();
@@ -71,9 +76,10 @@ const startQuiz = async () => {
     nextQuestion();
 }
 
+// Function to finish last quiz question and view final score
 const finishQuiz = () => {
     // Update heading to results
-    heading.innerText = 'Results';
+    heading.innerText = 'You scored';
     // Hide answers section, display results section
     answersSection.classList.add('hidden');
     resultsSection.classList.remove('hidden');
@@ -85,6 +91,7 @@ const finishQuiz = () => {
     questionCount += 1;
 }
 
+// Function to populate the next question
 const nextQuestion = () => {
     // Get question object from data
     const questionObject = data.results[questionCount];
@@ -99,7 +106,7 @@ const nextQuestion = () => {
     for (let i = 1; i <= 4; i++) {
         const answerButton = document.getElementById(`answer-${i}`);
         // Reset answer button status
-        answerButton.classList.remove('correct', 'incorrect');
+        answerButton.classList.remove('correct', 'incorrect', 'selected');
         if ( i === correctAnswerNum ) {
             answerButton.innerText = decodeHtmlEntities(questionObject['correct_answer']);
         } else {
@@ -116,6 +123,7 @@ const nextQuestion = () => {
     }
 }
 
+// Function to restart quiz, from score page
 const restartQuiz = () => {
     // Reset question count and score
     questionCount = 0;
@@ -128,7 +136,7 @@ const restartQuiz = () => {
 }
 
 
-// UTILITIES
+// UTILITY FUNCTIONS
 
 // Decode html entities present in data (function learnt from chatGPT)
 const decodeHtmlEntities = (str) => {
@@ -137,16 +145,43 @@ const decodeHtmlEntities = (str) => {
     return decoded;
 }
 
-const deactivateOtherAnswers = (selectedAnswerIdx) => {
+const deactivateAllAnswerButtons = () => {
     for (let i = 1; i <= 4; i++) {
-        if (i !== selectedAnswerIdx) {
-            document.getElementById(`answer-${i}`).classList.add('disabled');
-        }
+        document.getElementById(`answer-${i}`).classList.add('disabled');
     }
 }
 
 const activateAllAnswerButtons = () => {
     for (let i = 1; i <= 4; i++) {
         document.getElementById(`answer-${i}`).classList.remove('disabled');
+    }
+}
+
+const makeUiRed = () => {
+    // Make main's border red
+    document.getElementById('main').classList.add('red');
+    // Make note symbols red
+    const symbols = document.getElementsByClassName('symbol');
+    for (let symbol of symbols) {
+        symbol.src = 'assets/images/musicquiz-red.png';
+    }
+    // Make quiz title red
+    const titles = document.getElementsByClassName('title');
+    for (let title of titles) {
+        title.classList.add('red');
+    }
+}
+
+const clearRedUi = () => {
+    document.getElementById('main').classList.remove('red');
+    // Revert note symbols to green
+    const symbols = document.getElementsByClassName('symbol');
+    for (let symbol of symbols) {
+        symbol.src = 'assets/images/musicquiz-green.png';
+    }
+    // Revert quiz title
+    const titles = document.getElementsByClassName('title');
+    for (let title of titles) {
+        title.classList.remove('red');
     }
 }
