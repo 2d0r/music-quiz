@@ -85,6 +85,9 @@ button {
     color: var(--neutral-color);
     line-height: 150%;
 }
+#tutorial-section ol {
+    margin-block-start: 0;
+}
 
 #select-difficulty {
     display: flex;
@@ -96,12 +99,12 @@ button {
     background-color: var(--bg-color);
     color: var(--neutral-color);
     font-family: inherit;
+    font-size: 1em;
     border: 1px solid var(--neutral-color);
-
-    &.selected {
-        border-color: var(--green-color);
-        color: var(--green-color);
-    }
+}
+#select-difficulty button.selected {
+    border-color: var(--green-color);
+    color: var(--green-color);
 }
 
 
@@ -114,12 +117,6 @@ button {
     column-gap: 12px;
     row-gap: 12px;
     width: 100%;
-    /* display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    width: 52vw;
-    gap: 12px; */
 }
 
 #answers-section button {
@@ -168,6 +165,8 @@ button {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    min-height: 50%;
 }
 
 #results-section #score {
@@ -207,8 +206,65 @@ button {
 
 /* Media queries */
 
+/* Most mobile and tablet sizes */
 @media screen and (max-width: 768px) {
+    body {
+        justify-content: space-evenly;
+    }
+    
+    main {
+        width: 60vw;
+        min-height: 60vh;
+        justify-content: space-between;
+    }
+
+    header h1, footer h1 {
+        font-size: 2em;
+    }
+
+    #tutorial-section ol {
+        padding-inline-start: 20px;
+        margin-bottom: 24px;
+    }
+
+    #select-difficulty {
+        flex-direction: column;
+    }
+
+    #answers-section {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
+    }
+    #answers-section button {
+        font-size: 1em;
+    }
+
     #submit-button {
         width: 100%;
+    }
+}
+
+/* Landscape mobile */
+@media screen and (max-width: 1024px) 
+and (max-height: 768px)
+and (orientation: landscape) {
+    body {
+        flex-direction: row;
+    }
+    main {
+        width: 70vw;
+    }
+    header, footer {
+        width: 20%;
+    }
+    header h1, footer h1 {
+        font-size: 2em;
+        text-align: center;
+    }
+    header {
+        transform: rotate(-90deg);
+    }
+    footer {
+        transform: rotate(90deg);
     }
 }

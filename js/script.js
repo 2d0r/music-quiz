@@ -1,3 +1,5 @@
+/*jshint esversion: 8 */
+
 const submitButton = document.getElementById('submit-button');
 const answersSection = document.getElementById('answers-section');
 const tutorialSection = document.getElementById('tutorial-section');
@@ -6,7 +8,6 @@ const heading = document.getElementById('heading');
 
 let questionCount = 0;
 let data = {};
-let questionObject = {};
 let score = 0;
 let correctAnswerNum = null;
 let difficulty = 'mixed';
@@ -76,7 +77,7 @@ const fetchQuestionsFromTriviaAPI = async (difficulty) => {
     } catch (error) {
         // Handle failing to fetch data
     }
-}
+};
 
 // Function to start quiz, from the tutorial page
 const startQuiz = async () => {
@@ -89,7 +90,7 @@ const startQuiz = async () => {
     answersSection.classList.remove('hidden');
     // Populate question
     nextQuestion();
-}
+};
 
 // Function to finish last quiz question and view final score
 const finishQuiz = () => {
@@ -104,7 +105,7 @@ const finishQuiz = () => {
     submitButton.innerText = 'Restart quiz';
     // Increase question count
     questionCount += 1;
-}
+};
 
 // Function to populate the next question
 const nextQuestion = () => {
@@ -115,17 +116,22 @@ const nextQuestion = () => {
     // Update heading with question text (function learnt from chatGPT)
     heading.innerText = questionCount + '. ' + decodeHtmlEntities(questionObject.question);
 
-    // Populate answers, randomising the placement of the correct answer
+    // Populate answer buttons, randomising the placement of the correct answer
     correctAnswerNum = Math.floor(Math.random() * 4) + 1;
-    let incorrectAnswers = questionObject['incorrect_answers'];
+    let incorrectAnswers = questionObject.incorrect_answers;
     for (let i = 1; i <= 4; i++) {
         const answerButton = document.getElementById(`answer-${i}`);
         // Reset answer button status
         answerButton.classList.remove('correct', 'incorrect', 'selected');
         if ( i === correctAnswerNum ) {
-            answerButton.innerText = decodeHtmlEntities(questionObject['correct_answer']);
+            answerButton.innerText = decodeHtmlEntities(questionObject.correct_answer);
         } else {
-            answerButton.innerText = decodeHtmlEntities(incorrectAnswers.shift());
+            const text = incorrectAnswers.shift();
+            // Hide button if there are fewer than 4 answers provided
+            if (!text) { 
+                answerButton.hidden = 'true';
+            }
+            answerButton.innerText = text;
         }
     }
     // Re-enable all answer buttons
@@ -136,7 +142,7 @@ const nextQuestion = () => {
     if (questionCount === 10) {
         submitButton.innerText = 'Finish';
     }
-}
+};
 
 // Function to restart quiz, from score page
 const restartQuiz = () => {
@@ -148,7 +154,7 @@ const restartQuiz = () => {
     heading.innerText = 'How to play';
     resultsSection.classList.add('hidden');
     tutorialSection.classList.remove('hidden');
-}
+};
 
 
 // UTILITY FUNCTIONS
@@ -158,19 +164,19 @@ const decodeHtmlEntities = (str) => {
     const parser = new DOMParser();
     const decoded = parser.parseFromString(str, 'text/html').body.textContent;
     return decoded;
-}
+};
 
 const deactivateAllAnswerButtons = () => {
     for (let i = 1; i <= 4; i++) {
         document.getElementById(`answer-${i}`).classList.add('disabled');
     }
-}
+};
 
 const activateAllAnswerButtons = () => {
     for (let i = 1; i <= 4; i++) {
         document.getElementById(`answer-${i}`).classList.remove('disabled');
     }
-}
+};
 
 const makeUiRed = () => {
     // Make main's border red
@@ -185,7 +191,7 @@ const makeUiRed = () => {
     for (let title of titles) {
         title.classList.add('red');
     }
-}
+};
 
 const clearRedUi = () => {
     document.getElementById('main').classList.remove('red');
@@ -199,7 +205,7 @@ const clearRedUi = () => {
     for (let title of titles) {
         title.classList.remove('red');
     }
-}
+};
 
 const deselectOtherDifficultyOptions = (selectedDifficultyIdx) => {
     for (let i = 0; i <= 3; i++) {
@@ -207,4 +213,4 @@ const deselectOtherDifficultyOptions = (selectedDifficultyIdx) => {
             document.getElementById(`difficulty-${i}`).classList.remove('selected');
         }
     }
-}
+};
