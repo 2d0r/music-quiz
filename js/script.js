@@ -14,6 +14,18 @@ let difficulty = 'mixed';
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Making sure more than 5 seconds passed since the last data fetch
+    // Trivia API is limited at 1 fetch every 5 seconds
+    const msSinceLastFetch = new Date() - Date.parse(localStorage.getItem('fetchTime'));
+    if (msSinceLastFetch <= 5000) {
+        submitButton.classList.add('disabled');
+        submitButton.innerText = 'Loading...';
+        setTimeout(() => {
+            submitButton.classList.remove('disabled');
+            submitButton.innerText = 'Start';
+        }, 5500 - msSinceLastFetch);
+    }
+
     // Handle click on the submitButton
     submitButton.addEventListener('click', () => {
         if (submitButton.classList.contains('disabled')) {
@@ -81,6 +93,8 @@ const fetchQuestionsFromTriviaAPI = async (difficulty) => {
 
 // Function to start quiz, from the tutorial page
 const startQuiz = async () => {
+    // Record time right before fetch (to handle the limitation of 1 request every 5 seconds)
+    localStorage.setItem('fetchTime', new Date());
     // Fetch questions from Trivia API
     data = await fetchQuestionsFromTriviaAPI(difficulty);
     submitButton.innerText = 'Next';
