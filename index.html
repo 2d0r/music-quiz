@@ -6,14 +6,10 @@
 
         <!-- SEO -->
         <meta name='author' content='Tudor Popescu'>
-        <meta 
-            name='description' 
-            content='Music quiz for audiophiles to test their knowledge.'
-        >
-        <meta 
-            name='keywords' 
-            content='Music Quiz. Music. Music trivia. Quiz.'
-        >
+        <meta name='description' 
+            content='Music quiz for audiophiles to test their knowledge.'>
+        <meta name='keywords' 
+            content='Music Quiz. Music. Music trivia. Quiz.'>
 
         <!-- Favicon -->
         <link rel='icon' type='image/png' sizes='16x16' href='assets/favicon/favicon-16x16.png'>
@@ -33,6 +29,23 @@
 
         <main id='main'>
             <h2 id='heading'>How to play</h2>
+
+            <!-- Tutorial Section -->
+            <section id='tutorial-section'>
+                <ol>
+                    <li>Each question values 1 point</li>
+                    <li>You get 10 questions about music</li>
+                    <li>Maximum score is 10</li>
+                    <li>Choose difficulty:</li>
+                </ol>
+                <div id='select-difficulty'>
+                    <button id='difficulty-0' class='selected'>Mixed</button>
+                    <button id='difficulty-1'>Easy</button>
+                    <button id='difficulty-2'>Medium</button>
+                    <button id='difficulty-3'>Hard</button>
+                </div>
+            </section>
+
             <!-- Answers section -->
             <section id='answers-section' class='hidden'>
                 <button id='answer-1'>Answer 1</button>
@@ -40,19 +53,13 @@
                 <button id='answer-3'>Answer 3</button>
                 <button id='answer-4'>Answer 4</button> 
             </section>
-            <!-- Tutorial Section -->
-            <section id='tutorial-section'>
-                <ol>
-                    <li>Each question values 1 point</li>
-                    <li>You get 10 questions about music</li>
-                    <li>Maximum score is 10</li>
-                </ol>
-            </section>
+
             <!-- Results section -->
             <section id='results-section' class='hidden'>
                 <span id='score'></span>
                 out of 10
             </section>
+
             <button type='button' id='submit-button'>Start</button>
         </main>
 

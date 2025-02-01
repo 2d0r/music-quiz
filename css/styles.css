@@ -79,6 +79,32 @@ button {
 }
 
 
+/* Tutorial section */
+
+#tutorial-section {
+    color: var(--neutral-color);
+    line-height: 150%;
+}
+
+#select-difficulty {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+#select-difficulty button {
+    background-color: var(--bg-color);
+    color: var(--neutral-color);
+    font-family: inherit;
+    border: 1px solid var(--neutral-color);
+
+    &.selected {
+        border-color: var(--green-color);
+        color: var(--green-color);
+    }
+}
+
+
 /* Answers section */
 
 #answers-section {
@@ -133,14 +159,6 @@ button {
 
 #answers-section button.incorrect.selected {
     background-color: var(--red-color-dim);
-}
-
-
-/* Tutorial section */
-
-#tutorial-section {
-    color: white;
-    line-height: 150%;
 }
 
 

@@ -3,11 +3,13 @@ const answersSection = document.getElementById('answers-section');
 const tutorialSection = document.getElementById('tutorial-section');
 const resultsSection = document.getElementById('results-section');
 const heading = document.getElementById('heading');
+
 let questionCount = 0;
 let data = {};
 let questionObject = {};
 let score = 0;
 let correctAnswerNum = null;
+let difficulty = 'mixed';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -51,11 +53,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Handle selecting difficulty
+    for(let i = 0; i <= 3; i++) {
+        const difficultyOption = document.getElementById(`difficulty-${i}`);
+        difficultyOption.addEventListener('click', () => {
+            difficultyOption.classList.add('selected');
+            // Deselect all other difficulties
+            deselectOtherDifficultyOptions(i);
+            // Save selected difficulty
+            difficulty = difficultyOption.textContent.toLowerCase();
+        });
+    }
 });
 
-const fetchQuestionsFromTriviaAPI = async () => {
+const fetchQuestionsFromTriviaAPI = async (difficulty) => {
+    const difficultyUrlParam = difficulty === 'mixed' ? '' : `&difficulty=${difficulty}`;
     try {
-        const result = await fetch('https://opentdb.com/api.php?amount=10&category=12&type=multiple');
+        const result = await fetch(`https://opentdb.com/api.php?amount=10&category=12&type=multiple${difficultyUrlParam}`);
         const json = await result.json();
         return json;
     } catch (error) {
@@ -66,7 +81,7 @@ const fetchQuestionsFromTriviaAPI = async () => {
 // Function to start quiz, from the tutorial page
 const startQuiz = async () => {
     // Fetch questions from Trivia API
-    data = await fetchQuestionsFromTriviaAPI();
+    data = await fetchQuestionsFromTriviaAPI(difficulty);
     submitButton.innerText = 'Next';
     // Hide the tutorial
     tutorialSection.classList.add('hidden');
@@ -183,5 +198,13 @@ const clearRedUi = () => {
     const titles = document.getElementsByClassName('title');
     for (let title of titles) {
         title.classList.remove('red');
+    }
+}
+
+const deselectOtherDifficultyOptions = (selectedDifficultyIdx) => {
+    for (let i = 0; i <= 3; i++) {
+        if (i !== selectedDifficultyIdx) {
+            document.getElementById(`difficulty-${i}`).classList.remove('selected');
+        }
     }
 }
