@@ -1,5 +1,3 @@
-/*jshint esversion: 8 */
-
 const submitButton = document.getElementById('submit-button');
 const answersSection = document.getElementById('answers-section');
 const tutorialSection = document.getElementById('tutorial-section');
@@ -18,9 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Trivia API is limited at 1 fetch every 5 seconds
     const msSinceLastFetch = new Date() - Date.parse(localStorage.getItem('fetchTime'));
     if (msSinceLastFetch <= 5000) {
+        // Disable submit button and display 'loading' while fetching data
         submitButton.classList.add('disabled');
         submitButton.innerText = 'Loading...';
         setTimeout(() => {
+            // Enable submit button once the data was fetched
             submitButton.classList.remove('disabled');
             submitButton.innerText = 'Start';
         }, 5500 - msSinceLastFetch);
@@ -28,16 +28,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle click on the submitButton
     submitButton.addEventListener('click', () => {
+        // Don't do anything if button has the class disabled
         if (submitButton.classList.contains('disabled')) {
             return;
         }
         if (questionCount === 0 || submitButton.innerText === 'Start') {
+            // Start quiz if questions count hasn't started
             startQuiz();
         } else if (questionCount === 10) {
+            // Finish quiz if question count is at the last question
             finishQuiz();
-        } else if (questionCount === 11) {
+        } else if (questionCount > 10) {
+            // Restart quiz if question count is bigger than the last question
             restartQuiz();
         } else {
+            // Otherwise, go to next question
             nextQuestion();
         }
         // Reset red UI ever time submit button is clicked
@@ -83,11 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
 const fetchQuestionsFromTriviaAPI = async (difficulty) => {
     const difficultyUrlParam = difficulty === 'mixed' ? '' : `&difficulty=${difficulty}`;
     try {
+        // Fetch based on selected difficulty using url parameter
         const result = await fetch(`https://opentdb.com/api.php?amount=10&category=12&type=multiple${difficultyUrlParam}`);
         const json = await result.json();
         return json;
     } catch (error) {
-        // Handle failing to fetch data
+        // Handling data fetch error
+        alert('Failed to fetch questions from Open Trivia Database. Refresh and try again');
+        console.error('Failed to fetch data with Trivia API', error);
     }
 };
 
@@ -145,7 +153,7 @@ const nextQuestion = () => {
             if (!text) { 
                 answerButton.hidden = 'true';
             }
-            answerButton.innerText = text;
+            answerButton.innerText = decodeHtmlEntities(text);
         }
     }
     // Re-enable all answer buttons
@@ -180,18 +188,21 @@ const decodeHtmlEntities = (str) => {
     return decoded;
 };
 
+// Function to deactivate all answer buttons
 const deactivateAllAnswerButtons = () => {
     for (let i = 1; i <= 4; i++) {
         document.getElementById(`answer-${i}`).classList.add('disabled');
     }
 };
 
+// Function to activate all answer buttons
 const activateAllAnswerButtons = () => {
     for (let i = 1; i <= 4; i++) {
         document.getElementById(`answer-${i}`).classList.remove('disabled');
     }
 };
 
+// Function to make UI elements red to signal wrong answer
 const makeUiRed = () => {
     // Make main's border red
     document.getElementById('main').classList.add('red');
@@ -207,6 +218,7 @@ const makeUiRed = () => {
     }
 };
 
+// Function to clear red UI elements when moving to a new question
 const clearRedUi = () => {
     document.getElementById('main').classList.remove('red');
     // Revert note symbols to green
@@ -221,6 +233,7 @@ const clearRedUi = () => {
     }
 };
 
+// Function to deselect other difficulty options when selecting one
 const deselectOtherDifficultyOptions = (selectedDifficultyIdx) => {
     for (let i = 0; i <= 3; i++) {
         if (i !== selectedDifficultyIdx) {

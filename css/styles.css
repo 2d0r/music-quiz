@@ -32,6 +32,7 @@ header, footer {
     display: flex;
     justify-content: space-around;
     align-items: center;
+    overflow: hidden;
 }
 header h1, footer h1 {
     font-size: 5em;
@@ -215,6 +216,7 @@ button {
     main {
         width: 60vw;
         min-height: 60vh;
+        max-height: 75vh;
         justify-content: space-between;
     }
 
@@ -254,17 +256,20 @@ and (orientation: landscape) {
     main {
         width: 70vw;
     }
-    header, footer {
+    header {
         width: 20%;
+        transform: rotate(-90deg);
+    }
+    footer {
+        width: 20%;
+        transform: rotate(90deg);
     }
     header h1, footer h1 {
         font-size: 2em;
         text-align: center;
     }
-    header {
-        transform: rotate(-90deg);
-    }
-    footer {
-        transform: rotate(90deg);
+    header h1.title, footer h1.title {
+        white-space: nowrap;
+        margin: 6px;
     }
 }
