@@ -212,27 +212,32 @@ button {
     body {
         justify-content: space-evenly;
     }
-    
     main {
-        width: 60vw;
+        width: 70vw;
         min-height: 60vh;
         max-height: 75vh;
         justify-content: space-between;
+        padding: 36px;
     }
-
+    header {
+        height: 10vh;
+    }
     header h1, footer h1 {
         font-size: 2em;
     }
-
+    header .symbol, footer .symbol {
+        max-height: 6vh;
+    }
+    #heading.shrink {
+        font-size: 1.4em;
+    }
     #tutorial-section ol {
         padding-inline-start: 20px;
         margin-bottom: 24px;
     }
-
     #select-difficulty {
         flex-direction: column;
     }
-
     #answers-section {
         grid-template-columns: 1fr;
         grid-template-rows: 1fr 1fr 1fr 1fr;
@@ -240,14 +245,14 @@ button {
     #answers-section button {
         font-size: 1em;
     }
-
     #submit-button {
         width: 100%;
     }
 }
 
 /* Landscape mobile */
-@media screen and (max-width: 1024px) 
+@media screen 
+and (max-width: 1024px) 
 and (max-height: 768px)
 and (orientation: landscape) {
     body {
@@ -255,14 +260,12 @@ and (orientation: landscape) {
     }
     main {
         width: 70vw;
+        max-height: none;
+        padding: 36px;
     }
-    header {
+    header, footer {
         width: 20%;
         transform: rotate(-90deg);
-    }
-    footer {
-        width: 20%;
-        transform: rotate(90deg);
     }
     header h1, footer h1 {
         font-size: 2em;
@@ -271,5 +274,71 @@ and (orientation: landscape) {
     header h1.title, footer h1.title {
         white-space: nowrap;
         margin: 6px;
+    }
+    .title {
+        display: none;
+    }
+    #heading.shrink {
+        font-size: 1.4em;
+    }
+}
+
+/* small devices such as iPhone 5 */
+@media screen and (max-height: 600px) and (orientation: portrait) {
+    body {
+        height: auto;
+        justify-content: flex-end;
+    }
+    main {
+        max-height: 80vh;
+        height: 80vh;
+        width: 80vw;
+        border-radius: 24px 24px 0px 0px;
+        border-width: 0;
+        padding: 36px;
+    }
+    header {
+        height: 10vh;
+    }
+    footer {
+        display: none;
+    }
+}
+
+/* small devices landscape */
+@media screen and (max-width: 600px) and (orientation: landscape) {
+    body {
+        flex-direction: column;
+        height: auto;
+    }
+    main {
+        height: auto;
+        width: 70vw;
+        max-height: none;
+        margin: 5vh 0;
+    }
+    header {
+        height: 20vh;
+        width: 100%;
+        transform: none;
+    }
+    header .title {
+        display: block;
+    }
+    header, footer {
+        display: none;
+    }
+    #heading {
+        font-size: 1.4em;
+    }
+    #heading.shrink {
+        font-size: 1.3em;
+    }
+    #select-difficulty {
+        flex-direction: row;
+    }
+    #answers-section {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
     }
 }

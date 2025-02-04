@@ -7,7 +7,7 @@ const heading = document.getElementById('heading');
 let questionCount = 0;
 let data = {};
 let score = 0;
-let correctAnswerNum = null;
+let correctAnswerIdx = null;
 let difficulty = 'mixed';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -50,17 +50,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Handle selecting an answer
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 0; i <= 3; i++) {
         const selectedAnswer = document.getElementById(`answer-${i}`);
         selectedAnswer.addEventListener('click', () => {
             // Check that button is not disabled (which is the case when an answer was already selected)
             if (!selectedAnswer.classList.contains('disabled')) {
-                if (i === correctAnswerNum) {
+                if (i === correctAnswerIdx) {
                     selectedAnswer.classList.add('correct', 'selected');
                     score += 1;
                 } else {
                     selectedAnswer.classList.add('incorrect', 'selected');
-                    document.getElementById(`answer-${correctAnswerNum}`).classList.add('correct');
+                    document.getElementById(`answer-${correctAnswerIdx}`).classList.add('correct');
                     // Make more elements of the UI red to signal the wrong answer
                     makeUiRed();
                 }
@@ -136,25 +136,29 @@ const nextQuestion = () => {
     questionCount += 1;
 
     // Update heading with question text (function learnt from chatGPT)
-    heading.innerText = questionCount + '. ' + decodeHtmlEntities(questionObject.question);
+    const questionText = decodeHtmlEntities(questionObject.question);
+    heading.innerText = questionCount + '. ' + questionText;
+    if (questionText.length > 80) {
+        document.getElementById('heading').classList.add('shrink');
+    }
 
     // Populate answer buttons, randomising the placement of the correct answer
-    correctAnswerNum = Math.floor(Math.random() * 4) + 1;
-    let incorrectAnswers = questionObject.incorrect_answers;
-    for (let i = 1; i <= 4; i++) {
+    // Shuffle answers
+    let answers = shuffle([...questionObject.incorrect_answers, questionObject.correct_answer]);
+    for (let i = 0; i <= 3; i++) {
         const answerButton = document.getElementById(`answer-${i}`);
         // Reset answer button status
         answerButton.classList.remove('correct', 'incorrect', 'selected');
-        if ( i === correctAnswerNum ) {
-            answerButton.innerText = decodeHtmlEntities(questionObject.correct_answer);
-        } else {
-            const text = incorrectAnswers.shift();
-            // Hide button if there are fewer than 4 answers provided
-            if (!text) { 
-                answerButton.hidden = 'true';
-            }
-            answerButton.innerText = decodeHtmlEntities(text);
+        // Save correct answer index
+        if (answers[i] === questionObject.correct_answer) {
+            correctAnswerIdx = i;
         }
+        // Hide button if there are fewer than 4 answers provided
+        if (!answers[i]) {
+            answerButton.hidden = 'true';
+        }
+        // Populate text on button
+        answerButton.innerText = decodeHtmlEntities(answers[i]);
     }
     // Re-enable all answer buttons
     activateAllAnswerButtons();
@@ -190,14 +194,14 @@ const decodeHtmlEntities = (str) => {
 
 // Function to deactivate all answer buttons
 const deactivateAllAnswerButtons = () => {
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 0; i <= 3; i++) {
         document.getElementById(`answer-${i}`).classList.add('disabled');
     }
 };
 
 // Function to activate all answer buttons
 const activateAllAnswerButtons = () => {
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 0; i <= 3; i++) {
         document.getElementById(`answer-${i}`).classList.remove('disabled');
     }
 };
@@ -241,3 +245,13 @@ const deselectOtherDifficultyOptions = (selectedDifficultyIdx) => {
         }
     }
 };
+
+// Function to shuffle array (Fisher Yates)
+// https://www.freecodecamp.org/news/how-to-shuffle-an-array-of-items-using-javascript-or-typescript/
+const shuffle = (array) => { 
+  for (let i = array.length - 1; i > 0; i--) { 
+    const j = Math.floor(Math.random() * (i + 1)); 
+    [array[i], array[j]] = [array[j], array[i]]; 
+  } 
+  return array; 
+}; 
