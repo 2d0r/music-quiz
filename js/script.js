@@ -1,11 +1,19 @@
-const submitButton = document.getElementById('submit-button');
-const answersSection = document.getElementById('answers-section');
-const tutorialSection = document.getElementById('tutorial-section');
-const resultsSection = document.getElementById('results-section');
-const heading = document.getElementById('heading');
+import { 
+    answersSection, tutorialSection, resultsSection,
+    heading, submitButton,
+    MAX_QUESTION_NUM,
+    LONG_QUESTION_LENGTH,
+} from './constants.js';
+import { fetchQuestionsFromTriviaAPI, MIN_FETCH_INTERVAL } from './api.js';
+import { decodeHtmlEntities, shuffle } from './utils.js';
+import { 
+    deactivateAllAnswerButtons, activateAllAnswerButtons, 
+    makeUiRed, clearRedUi, 
+    deselectOtherDifficultyOptions 
+} from './uiManagement.js';
 
-let questionCount = 0;
 let data = {};
+let questionCount = 0;
 let score = 0;
 let correctAnswerIdx = null;
 let difficulty = 'mixed';
@@ -15,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Making sure more than 5 seconds passed since the last data fetch
     // Trivia API is limited at 1 fetch every 5 seconds
     const msSinceLastFetch = new Date() - Date.parse(localStorage.getItem('fetchTime'));
-    if (msSinceLastFetch <= 5000) {
+    if (msSinceLastFetch <= MIN_FETCH_INTERVAL) {
         // Disable submit button and display 'loading' while fetching data
         submitButton.classList.add('disabled');
         submitButton.innerText = 'Loading...';
@@ -23,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Enable submit button once the data was fetched
             submitButton.classList.remove('disabled');
             submitButton.innerText = 'Start';
-        }, 5500 - msSinceLastFetch);
+        }, MIN_FETCH_INTERVAL - msSinceLastFetch + 500);
     }
 
     // Handle click on the submitButton
@@ -35,10 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (questionCount === 0 || submitButton.innerText === 'Start') {
             // Start quiz if questions count hasn't started
             startQuiz();
-        } else if (questionCount === 10) {
+        } else if (questionCount === MAX_QUESTION_NUM) {
             // Finish quiz if question count is at the last question
             finishQuiz();
-        } else if (questionCount > 10) {
+        } else if (questionCount > MAX_QUESTION_NUM) {
             // Restart quiz if question count is bigger than the last question
             restartQuiz();
         } else {
@@ -85,20 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-const fetchQuestionsFromTriviaAPI = async (difficulty) => {
-    const difficultyUrlParam = difficulty === 'mixed' ? '' : `&difficulty=${difficulty}`;
-    try {
-        // Fetch based on selected difficulty using url parameter
-        const result = await fetch(`https://opentdb.com/api.php?amount=10&category=12&type=multiple${difficultyUrlParam}`);
-        const json = await result.json();
-        return json;
-    } catch (error) {
-        // Handling data fetch error
-        alert('Failed to fetch questions from Open Trivia Database. Refresh and try again');
-        console.error('Failed to fetch data with Trivia API', error);
-    }
-};
-
 // Function to start quiz, from the tutorial page
 const startQuiz = async () => {
     // Record time right before fetch (to handle the limitation of 1 request every 5 seconds)
@@ -138,7 +132,7 @@ const nextQuestion = () => {
     // Update heading with question text (function learnt from chatGPT)
     const questionText = decodeHtmlEntities(questionObject.question);
     heading.innerText = questionCount + '. ' + questionText;
-    if (questionText.length > 80) {
+    if (questionText.length > LONG_QUESTION_LENGTH) {
         document.getElementById('heading').classList.add('shrink');
     }
 
@@ -165,7 +159,7 @@ const nextQuestion = () => {
     // Disable submit button until user selects an answer
     submitButton.classList.add('disabled');
     // Change submit button to finish on last question
-    if (questionCount === 10) {
+    if (questionCount === MAX_QUESTION_NUM) {
         submitButton.innerText = 'Finish';
     }
 };
@@ -181,77 +175,3 @@ const restartQuiz = () => {
     resultsSection.classList.add('hidden');
     tutorialSection.classList.remove('hidden');
 };
-
-
-// UTILITY FUNCTIONS
-
-// Decode html entities present in data (function learnt from chatGPT)
-const decodeHtmlEntities = (str) => {
-    const parser = new DOMParser();
-    const decoded = parser.parseFromString(str, 'text/html').body.textContent;
-    return decoded;
-};
-
-// Function to deactivate all answer buttons
-const deactivateAllAnswerButtons = () => {
-    for (let i = 0; i <= 3; i++) {
-        document.getElementById(`answer-${i}`).classList.add('disabled');
-    }
-};
-
-// Function to activate all answer buttons
-const activateAllAnswerButtons = () => {
-    for (let i = 0; i <= 3; i++) {
-        document.getElementById(`answer-${i}`).classList.remove('disabled');
-    }
-};
-
-// Function to make UI elements red to signal wrong answer
-const makeUiRed = () => {
-    // Make main's border red
-    document.getElementById('main').classList.add('red');
-    // Make note symbols red
-    const symbols = document.getElementsByClassName('symbol');
-    for (let symbol of symbols) {
-        symbol.src = 'assets/images/musicquiz-red.png';
-    }
-    // Make quiz title red
-    const titles = document.getElementsByClassName('title');
-    for (let title of titles) {
-        title.classList.add('red');
-    }
-};
-
-// Function to clear red UI elements when moving to a new question
-const clearRedUi = () => {
-    document.getElementById('main').classList.remove('red');
-    // Revert note symbols to green
-    const symbols = document.getElementsByClassName('symbol');
-    for (let symbol of symbols) {
-        symbol.src = 'assets/images/musicquiz-green.png';
-    }
-    // Revert quiz title
-    const titles = document.getElementsByClassName('title');
-    for (let title of titles) {
-        title.classList.remove('red');
-    }
-};
-
-// Function to deselect other difficulty options when selecting one
-const deselectOtherDifficultyOptions = (selectedDifficultyIdx) => {
-    for (let i = 0; i <= 3; i++) {
-        if (i !== selectedDifficultyIdx) {
-            document.getElementById(`difficulty-${i}`).classList.remove('selected');
-        }
-    }
-};
-
-// Function to shuffle array (Fisher Yates)
-// https://www.freecodecamp.org/news/how-to-shuffle-an-array-of-items-using-javascript-or-typescript/
-const shuffle = (array) => { 
-  for (let i = array.length - 1; i > 0; i--) { 
-    const j = Math.floor(Math.random() * (i + 1)); 
-    [array[i], array[j]] = [array[j], array[i]]; 
-  } 
-  return array; 
-}; 
