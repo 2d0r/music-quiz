@@ -11,6 +11,7 @@
 @font-face {
     font-family: PixelifySans;
     src: url(../assets/fonts/PixelifySans-VariableFont-wght.ttf);
+    font-display: swap;
 }
 
 body {
@@ -28,7 +29,7 @@ body {
 
 header, footer {
     width: 100%;
-    opacity: 30%;
+    opacity: 50%;
     display: flex;
     justify-content: space-around;
     align-items: center;

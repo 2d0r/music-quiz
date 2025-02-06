@@ -5,11 +5,9 @@
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 
         <!-- SEO -->
-        <meta name='author' content='Tudor Popescu'>
-        <meta name='description' 
-            content='Music quiz for audiophiles to test their knowledge.'>
-        <meta name='keywords' 
-            content='Music Quiz. Music. Music trivia. Quiz.'>
+        <meta name='author' content=''>
+        <meta name='description' content=''>
+        <meta name='keywords' content=''>
 
         <!-- Favicon -->
         <link rel='icon' type='image/png' sizes='16x16' href='./assets/favicon/favicon-16x16.png'>
@@ -17,14 +15,14 @@
 
         <!--Style Sheet-->
         <link rel='stylesheet' href='./css/styles.css'>
-        <title>a music quiz</title>
+        <title id='title'></title>
     </head>
 
     <body>
         <header>
             <!-- Title and logo (top of page) -->
             <img class='symbol' src='./assets/images/musicquiz-green.png' alt='music-quiz-logo'>
-            <h1 class='title'>a music quiz</h1>
+            <h1 id='header-title' class='title'></h1>
             <img class='symbol' src='./assets/images/musicquiz-red.png' alt='music-quiz-logo'>
         </header>
 
@@ -33,32 +31,17 @@
 
             <!-- Tutorial Section -->
             <div id='tutorial-section'>
-                <ol>
-                    <li>Each question values 1 point</li>
-                    <li>You get 10 questions about music</li>
-                    <li>Maximum score is 10</li>
-                    <li>Choose difficulty:</li>
-                </ol>
-                <div id='select-difficulty'>
-                    <button id='difficulty-0' class='selected'>Mixed</button>
-                    <button id='difficulty-1'>Easy</button>
-                    <button id='difficulty-2'>Medium</button>
-                    <button id='difficulty-3'>Hard</button>
-                </div>
+                <ol id='tutorial-steps'></ol>
+                <div id='select-difficulty'></div>
             </div>
 
             <!-- Answers section -->
-            <div id='answers-section' class='hidden'>
-                <button id='answer-0'>Answer 1</button>
-                <button id='answer-1'>Answer 2</button>
-                <button id='answer-2'>Answer 3</button>
-                <button id='answer-3'>Answer 4</button> 
-            </div>
+            <div id='answers-section' class='hidden'></div>
 
             <!-- Results section -->
             <div id='results-section' class='hidden'>
                 <span id='score'></span>
-                out of 10
+                <span id='score-details'></span>
             </div>
 
             <!-- Submit button -->
@@ -68,7 +51,7 @@
         <footer>
             <!-- Title and logo (bottom of page) -->
             <img class='symbol' src='./assets/images/musicquiz-red.png' alt='music-quiz-logo'>
-            <h1 class='flip-text title'>a music quiz</h1>
+            <h1 id='footer-title' class='flip-text title'></h1>
             <img class='symbol' src='./assets/images/musicquiz-green.png' alt='music-quiz-logo'>
         </footer>
 

@@ -1,16 +1,11 @@
+import { submitButton, MAX_QUESTION_NUM, resultsSection } from './constants.js';
+import { MIN_FETCH_INTERVAL } from './api.js';
 import { 
-    answersSection, tutorialSection, resultsSection,
-    heading, submitButton,
-    MAX_QUESTION_NUM,
-    LONG_QUESTION_LENGTH,
-} from './constants.js';
-import { fetchQuestionsFromTriviaAPI, MIN_FETCH_INTERVAL } from './api.js';
-import { decodeHtmlEntities, shuffle } from './utils.js';
-import { 
-    deactivateAllAnswerButtons, activateAllAnswerButtons, 
-    makeUiRed, clearRedUi, 
-    deselectOtherDifficultyOptions 
+    deactivateAllAnswerButtons, deselectOtherDifficultyOptions,
+    makeUiRed, clearRedUi,
+    populateUI,  
 } from './uiManagement.js';
+import { startQuiz, finishQuiz, restartQuiz, nextQuestion } from './quizManagement.js';
 
 let data = {};
 let questionCount = 0;
@@ -19,6 +14,8 @@ let correctAnswerIdx = null;
 let difficulty = 'mixed';
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    populateUI();
 
     // Making sure more than 5 seconds passed since the last data fetch
     // Trivia API is limited at 1 fetch every 5 seconds
@@ -35,23 +32,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Handle click on the submitButton
-    submitButton.addEventListener('click', () => {
+    submitButton.addEventListener('click', async () => {
         // Don't do anything if button has the class disabled
         if (submitButton.classList.contains('disabled')) {
             return;
         }
         if (questionCount === 0 || submitButton.innerText === 'Start') {
             // Start quiz if questions count hasn't started
-            startQuiz();
+            data = await startQuiz(difficulty);
+            // Populate question
+            correctAnswerIdx = nextQuestion(data, questionCount);
+            questionCount += 1;
         } else if (questionCount === MAX_QUESTION_NUM) {
             // Finish quiz if question count is at the last question
-            finishQuiz();
-        } else if (questionCount > MAX_QUESTION_NUM) {
-            // Restart quiz if question count is bigger than the last question
+            finishQuiz(score);
+            questionCount += 1;
+        } else if (!resultsSection.classList.contains('hidden')) {
+            // Restart quiz once results are displayed
             restartQuiz();
+            // Reset question count and score
+            score = 0;
+            questionCount = 0;
         } else {
             // Otherwise, go to next question
-            nextQuestion();
+            correctAnswerIdx = nextQuestion(data, questionCount);
+            questionCount += 1;
         }
         // Reset red UI ever time submit button is clicked
         clearRedUi();
@@ -92,86 +97,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
-// Function to start quiz, from the tutorial page
-const startQuiz = async () => {
-    // Record time right before fetch (to handle the limitation of 1 request every 5 seconds)
-    localStorage.setItem('fetchTime', new Date());
-    // Fetch questions from Trivia API
-    data = await fetchQuestionsFromTriviaAPI(difficulty);
-    submitButton.innerText = 'Next';
-    // Hide the tutorial
-    tutorialSection.classList.add('hidden');
-    // Show the first question
-    answersSection.classList.remove('hidden');
-    // Populate question
-    nextQuestion();
-};
-
-// Function to finish last quiz question and view final score
-const finishQuiz = () => {
-    // Update heading to results
-    heading.innerText = 'You scored';
-    // Hide answers section, display results section
-    answersSection.classList.add('hidden');
-    resultsSection.classList.remove('hidden');
-    // Display score
-    document.getElementById('score').innerText = score + ` point${score > 1 ? 's' : ''}`;
-    // Update submit button
-    submitButton.innerText = 'Restart quiz';
-    // Increase question count
-    questionCount += 1;
-};
-
-// Function to populate the next question
-const nextQuestion = () => {
-    // Get question object from data
-    const questionObject = data.results[questionCount];
-    questionCount += 1;
-
-    // Update heading with question text (function learnt from chatGPT)
-    const questionText = decodeHtmlEntities(questionObject.question);
-    heading.innerText = questionCount + '. ' + questionText;
-    if (questionText.length > LONG_QUESTION_LENGTH) {
-        document.getElementById('heading').classList.add('shrink');
-    }
-
-    // Populate answer buttons, randomising the placement of the correct answer
-    // Shuffle answers
-    let answers = shuffle([...questionObject.incorrect_answers, questionObject.correct_answer]);
-    for (let i = 0; i <= 3; i++) {
-        const answerButton = document.getElementById(`answer-${i}`);
-        // Reset answer button status
-        answerButton.classList.remove('correct', 'incorrect', 'selected');
-        // Save correct answer index
-        if (answers[i] === questionObject.correct_answer) {
-            correctAnswerIdx = i;
-        }
-        // Hide button if there are fewer than 4 answers provided
-        if (!answers[i]) {
-            answerButton.hidden = 'true';
-        }
-        // Populate text on button
-        answerButton.innerText = decodeHtmlEntities(answers[i]);
-    }
-    // Re-enable all answer buttons
-    activateAllAnswerButtons();
-    // Disable submit button until user selects an answer
-    submitButton.classList.add('disabled');
-    // Change submit button to finish on last question
-    if (questionCount === MAX_QUESTION_NUM) {
-        submitButton.innerText = 'Finish';
-    }
-};
-
-// Function to restart quiz, from score page
-const restartQuiz = () => {
-    // Reset question count and score
-    questionCount = 0;
-    score = 0;
-    // Populate content to display the tutorial
-    submitButton.innerText = 'Start';
-    heading.innerText = 'How to play';
-    resultsSection.classList.add('hidden');
-    tutorialSection.classList.remove('hidden');
-};

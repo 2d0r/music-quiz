@@ -1,3 +1,46 @@
+import content from '../assets/data/content.json' with { type: 'json' };
+import { capitalise } from './utils.js';
+
+export const populateUI = () => {
+    // Populate site title, header, footer
+    document.getElementById('title').innerText = content.siteTitle;
+    document.getElementById('header-title').innerText = content.siteTitle;
+    document.getElementById('footer-title').innerText = content.siteTitle;
+
+    // Populate meta tags with content
+    const metaTags = document.getElementsByTagName('meta');
+    for (let tag of metaTags) {
+        if (tag.name === 'author') { tag.content = content.author; }
+        if (tag.name === 'description') { tag.content = content.description; }
+        if (tag.name === 'keywords') { tag.content = content.keywords; }
+    }
+
+    // Populate tutorial
+    for (let i = 0; i<= 3; i++) {
+        const li = document.createElement('li');
+        li.innerText = content.tutorialSteps[i];
+        document.getElementById('tutorial-steps').appendChild(li);
+    }
+
+    // Populate answer buttons
+    for (let i = 0; i <= 3; i++) {
+        const button = document.createElement('button');
+        button.setAttribute('id', `answer-${i}`);
+        document.getElementById('answers-section').appendChild(button);
+    }
+
+    // Populate difficulty buttons
+    for (let i = 0; i < content.difficulties.length; i++) {
+        const button = document.createElement('button');
+        button.setAttribute('id', `difficulty-${i}`);
+        button.innerText = capitalise(content.difficulties[i]);
+        if (i === 0) {
+            button.classList.add('selected');
+        }
+        document.getElementById('select-difficulty').appendChild(button);
+    }
+}
+
 // Function to deactivate all answer buttons
 export const deactivateAllAnswerButtons = () => {
     for (let i = 0; i <= 3; i++) {

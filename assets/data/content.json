@@ -1,0 +1,13 @@
+{
+    "siteTitle": "a music quiz",
+    "author": "Tudor Popescu",
+    "description": "Music quiz for audiophiles to test their knowledge.",
+    "keywords": "Music Quiz. Music. Music trivia. Quiz.",
+    "difficulties": [ "mixed", "easy", "medium", "hard" ],
+    "tutorialSteps": [
+        "There are 10 questions",
+        "Each question values 1 point",
+        "Maximum score is 10",
+        "Choose difficulty"
+    ]
+}

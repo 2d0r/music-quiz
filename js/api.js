@@ -2,6 +2,8 @@ import { MAX_QUESTION_NUM } from './constants.js';
 
 export const fetchQuestionsFromTriviaAPI = async (difficulty) => {
     const difficultyUrlParam = difficulty === 'mixed' ? '' : `&difficulty=${difficulty}`;
+    // Record time right before fetch (to handle the limitation of 1 request every 5 seconds)
+    localStorage.setItem('fetchTime', new Date());
     try {
         // Fetch based on selected difficulty using url parameter
         const result = await fetch(`https://opentdb.com/api.php?amount=${MAX_QUESTION_NUM}&category=12&type=multiple${difficultyUrlParam}`);
